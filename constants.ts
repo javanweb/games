@@ -24,8 +24,8 @@ export const LANE_X_POSITIONS = [-1.5 * LANE_WIDTH, -0.5 * LANE_WIDTH, 0.5 * LAN
 export const LAYER_Y_POSITIONS = [0.8, 1.6, 2.4]; // Low, Mid, High
 
 // Audio
-// Using a highly reliable track from Three.js examples to ensure playback works
-export const SONG_URL = 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/sounds/376737_Skullbeatz___Bad_Cat_Maste.mp3';
+// Using JSDelivr to serve the file with the correct audio/mpeg Content-Type header
+export const SONG_URL = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/sounds/376737_Skullbeatz___Bad_Cat_Maste.mp3';
 export const SONG_BPM = 120; 
 const BEAT_TIME = 60 / SONG_BPM;
 
