@@ -1,4 +1,3 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -45,19 +44,10 @@ export interface HandPositions {
   rightVelocity: THREE.Vector3;
 }
 
-// Modern Neon Palette - Updated for fresher look
+// Modern Glass/Aero Palette
 export const COLORS = {
-  left: '#f472b6',  // Neon Pink
-  right: '#22d3ee', // Neon Cyan
-  track: '#0f172a', // Slate 900
+  left: '#e879f9',  // Hot Pink / Fuchsia
+  right: '#22d3ee', // Electric Cyan
+  track: '#0f172a', 
   hittable: '#ffffff'
 };
-
-// Robust fix for "Property does not exist on type JSX.IntrinsicElements" errors
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-       [elemName: string]: any;
-    }
-  }
-}

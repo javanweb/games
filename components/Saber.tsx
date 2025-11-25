@@ -10,14 +10,6 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { HandType, COLORS } from '../types';
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      [elemName: string]: any;
-    }
-  }
-}
-
 interface SaberProps {
   type: HandType;
   positionRef: React.MutableRefObject<THREE.Vector3 | null>;
@@ -26,7 +18,7 @@ interface SaberProps {
 
 const Saber: React.FC<SaberProps> = ({ type, positionRef, velocityRef }) => {
   const meshRef = useRef<THREE.Group>(null);
-  const saberLength = 1.2; 
+  const saberLength = 1.3; 
 
   const targetRotation = useRef(new THREE.Euler());
   
@@ -73,27 +65,32 @@ const Saber: React.FC<SaberProps> = ({ type, positionRef, velocityRef }) => {
 
   return (
     <group ref={meshRef}>
-      {/* Clean White Handle */}
+      {/* Sleek White Handle (Aero Style) */}
       <mesh position={[0, -0.06, 0]}>
-        <cylinderGeometry args={[0.015, 0.015, 0.14, 16]} />
-        <meshStandardMaterial color="#f8fafc" roughness={0.1} metalness={0.9} />
+        <cylinderGeometry args={[0.018, 0.018, 0.16, 32]} />
+        <meshPhysicalMaterial 
+          color="#ffffff" 
+          roughness={0.1} 
+          metalness={0.2} 
+          clearcoat={1}
+        />
       </mesh>
       
-      {/* Minimalist Grip Lines */}
-      <mesh position={[0, -0.06, 0]}>
-         <cylinderGeometry args={[0.0155, 0.0155, 0.08, 3]} />
-         <meshStandardMaterial color="#94a3b8" roughness={0.5} metalness={0.5} wireframe />
+      {/* Chrome Pommel */}
+      <mesh position={[0, -0.145, 0]}>
+         <cylinderGeometry args={[0.02, 0.02, 0.01, 32]} />
+         <meshStandardMaterial color="#cbd5e1" roughness={0.2} metalness={1.0} />
       </mesh>
 
       {/* Emitter Guard - Chrome */}
-      <mesh position={[0, 0.015, 0]}>
-        <cylinderGeometry args={[0.022, 0.015, 0.01, 16]} />
+      <mesh position={[0, 0.02, 0]}>
+        <cylinderGeometry args={[0.022, 0.018, 0.02, 32]} />
         <meshStandardMaterial color="#e2e8f0" roughness={0.1} metalness={1} />
       </mesh>
 
       {/* Emitter Glow Ring */}
-      <mesh position={[0, 0.02, 0]}>
-        <torusGeometry args={[0.02, 0.003, 8, 16]} />
+      <mesh position={[0, 0.031, 0]}>
+        <torusGeometry args={[0.02, 0.002, 8, 32]} />
         <meshBasicMaterial color={color} toneMapped={false} />
       </mesh>
 
@@ -101,27 +98,27 @@ const Saber: React.FC<SaberProps> = ({ type, positionRef, velocityRef }) => {
       {/* --- BLADE --- */}
       {/* Intense White Core */}
       <mesh position={[0, 0.05 + saberLength / 2, 0]}>
-        <cylinderGeometry args={[0.006, 0.006, saberLength, 8]} />
+        <cylinderGeometry args={[0.008, 0.008, saberLength, 8]} />
         <meshBasicMaterial color="white" toneMapped={false} />
       </mesh>
 
-      {/* Colored Plasma Field - Softer Glass Look */}
+      {/* Plasma Glow Field - Glassy Look */}
       <mesh position={[0, 0.05 + saberLength / 2, 0]}>
-        <capsuleGeometry args={[0.03, saberLength, 8, 16]} />
+        <capsuleGeometry args={[0.035, saberLength, 8, 16]} />
         <meshPhysicalMaterial 
           color={color} 
           emissive={color} 
-          emissiveIntensity={2} 
+          emissiveIntensity={3} 
           toneMapped={false} 
           transparent
-          opacity={0.4} 
-          thickness={1.0}
+          opacity={0.3} 
+          thickness={0.5}
           roughness={0}
-          transmission={0.5}
+          transmission={0.6}
         />
       </mesh>
       
-      <pointLight color={color} intensity={2} distance={4} decay={2} position={[0, 0.3, 0]} />
+      <pointLight color={color} intensity={3} distance={5} decay={2} position={[0, 0.3, 0]} />
     </group>
   );
 };

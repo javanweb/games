@@ -69,7 +69,7 @@ const GameScene: React.FC<GameSceneProps> = ({
         const pulse = Math.pow(1 - beatPhase, 3); 
         
         if (ambientLightRef.current) {
-            ambientLightRef.current.intensity = 0.5 + (pulse * 0.3);
+            ambientLightRef.current.intensity = 0.3 + (pulse * 0.2);
         }
     }
 
@@ -190,65 +190,66 @@ const GameScene: React.FC<GameSceneProps> = ({
     <>
       <PerspectiveCamera ref={cameraRef} makeDefault position={[0, 1.8, 4]} fov={60} />
       
-      {/* Updated Background Color - Deep Midnight Blue */}
+      {/* Modern Dark Environment */}
       <color attach="background" args={['#050508']} />
-      <fog attach="fog" args={['#050508', 10, 50]} />
+      <fog attach="fog" args={['#050508', 15, 50]} />
       
       <ambientLight ref={ambientLightRef} intensity={0.5} />
-      {/* Main performance light */}
+      
+      {/* Stage Lights */}
       <spotLight 
         ref={spotLightRef} 
-        position={[0, 15, 5]} 
-        angle={0.6} 
+        position={[0, 20, 5]} 
+        angle={0.5} 
         penumbra={1} 
-        intensity={2} 
+        intensity={5} 
         castShadow 
-        color="#ffffff"
+        color="#a5f3fc" // Cyan tint
       />
-      {/* Rim light for player */}
-      <pointLight position={[0, 2, -5]} intensity={1} color="#4f46e5" />
+      <pointLight position={[-5, 5, 0]} intensity={2} color={COLORS.left} distance={15} />
+      <pointLight position={[5, 5, 0]} intensity={2} color={COLORS.right} distance={15} />
 
-      {/* Glossy Reflective Floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
-          <planeGeometry args={[20, 100]} />
+      {/* High Gloss Floor */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
+          <planeGeometry args={[30, 100]} />
           <meshPhysicalMaterial 
             color="#0a0a0e" 
-            roughness={0.05} 
-            metalness={0.8}
-            reflectivity={1}
+            roughness={0.0} // Glass-like reflection
+            metalness={0.6}
             clearcoat={1}
             clearcoatRoughness={0}
           />
       </mesh>
 
-      {/* Neon Grid */}
+      {/* Center Grid Line */}
       <Grid 
         position={[0, 0.01, 0]} 
-        args={[8, 100]} 
-        cellThickness={0.1} 
+        args={[4, 100]} 
+        cellThickness={0.2} 
         cellColor="#334155" 
         sectionSize={2} 
-        sectionThickness={1.5} 
+        sectionThickness={0} 
         sectionColor="#475569" 
         fadeDistance={40} 
         infiniteGrid 
       />
       
-      {/* Side Track Guides - Cyan/Pink Glow */}
-      <group position={[-4, 0, 0]}>
+      {/* Side Rails - Glowing */}
+      <group position={[-3, 0, 0]}>
          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
-             <planeGeometry args={[0.2, 100]} />
-             <meshBasicMaterial color={COLORS.left} transparent opacity={0.3} />
+             <planeGeometry args={[0.05, 100]} />
+             <meshBasicMaterial color={COLORS.left} transparent opacity={0.6} />
          </mesh>
       </group>
-      <group position={[4, 0, 0]}>
+      <group position={[3, 0, 0]}>
          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
-             <planeGeometry args={[0.2, 100]} />
-             <meshBasicMaterial color={COLORS.right} transparent opacity={0.3} />
+             <planeGeometry args={[0.05, 100]} />
+             <meshBasicMaterial color={COLORS.right} transparent opacity={0.6} />
          </mesh>
       </group>
 
-      <Stars radius={80} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+      {/* Stars background */}
+      <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
 
       <Saber type="left" positionRef={leftHandPosRef} velocityRef={leftHandVelRef} />
       <Saber type="right" positionRef={rightHandPosRef} velocityRef={rightHandVelRef} />

@@ -12,14 +12,6 @@ import * as THREE from 'three';
 import { NoteData, COLORS } from '../types';
 import { LANE_X_POSITIONS, LAYER_Y_POSITIONS, NOTE_SIZE } from '../constants';
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      [elemName: string]: any;
-    }
-  }
-}
-
 interface NoteProps {
   data: NoteData;
   zPos: number;
@@ -27,20 +19,14 @@ interface NoteProps {
 }
 
 // --- SPARK SHAPE GENERATOR ---
-// Creates the iconic 4-pointed star shape with concave edges
 const createSparkShape = (size: number) => {
   const shape = new THREE.Shape();
-  const s = size / 1.8; // Scale helper
+  const s = size / 1.8; 
 
-  // Start Top
   shape.moveTo(0, s);
-  // Curve to Right
   shape.quadraticCurveTo(0, 0, s, 0);
-  // Curve to Bottom
   shape.quadraticCurveTo(0, 0, 0, -s);
-  // Curve to Left
   shape.quadraticCurveTo(0, 0, -s, 0);
-  // Curve to Top
   shape.quadraticCurveTo(0, 0, 0, s);
   
   return shape;
@@ -53,7 +39,6 @@ const Debris: React.FC<{ data: NoteData, timeSinceHit: number, color: string }> 
     const groupRef = useRef<THREE.Group>(null);
     const flashRef = useRef<THREE.Mesh>(null);
 
-    // Animation parameters
     const flySpeed = 6.0;
     const rotationSpeed = 10.0;
     const distance = flySpeed * timeSinceHit;
@@ -75,7 +60,6 @@ const Debris: React.FC<{ data: NoteData, timeSinceHit: number, color: string }> 
         }
     });
     
-    // Shards simulate the spark shattering into crystals
     const Shard = ({ offsetDir, moveDir, scale = 1 }: { offsetDir: number[], moveDir: number[], scale?: number }) => {
         const meshRef = useRef<THREE.Mesh>(null);
 
@@ -92,7 +76,15 @@ const Debris: React.FC<{ data: NoteData, timeSinceHit: number, color: string }> 
 
         return (
             <Octahedron ref={meshRef} args={[NOTE_SIZE * 0.3 * scale]} position={[offsetDir[0], offsetDir[1], offsetDir[2]]}>
-                 <meshStandardMaterial color={color} roughness={0.1} metalness={0.9} emissive={color} emissiveIntensity={0.5} />
+                 <meshPhysicalMaterial 
+                    color={color} 
+                    roughness={0.1} 
+                    metalness={0.9} 
+                    emissive={color} 
+                    emissiveIntensity={1} 
+                    transparent 
+                    opacity={0.8} 
+                 />
             </Octahedron>
         )
     }
@@ -101,17 +93,15 @@ const Debris: React.FC<{ data: NoteData, timeSinceHit: number, color: string }> 
         <group ref={groupRef}>
             {/* Hit Flash */}
             <mesh ref={flashRef}>
-                <sphereGeometry args={[NOTE_SIZE * 1.2, 16, 16]} />
+                <sphereGeometry args={[NOTE_SIZE * 1.5, 16, 16]} />
                 <meshBasicMaterial color="white" transparent toneMapped={false} />
             </mesh>
 
-            {/* Shattered Pieces - 4-way burst for the 4 star points */}
             <Shard offsetDir={[0, 0.2, 0]} moveDir={[0, 1.5, -0.5]} scale={0.8} />
             <Shard offsetDir={[0.2, 0, 0]} moveDir={[1.5, 0, -0.5]} scale={0.8} />
             <Shard offsetDir={[0, -0.2, 0]} moveDir={[0, -1.5, -0.5]} scale={0.8} />
             <Shard offsetDir={[-0.2, 0, 0]} moveDir={[-1.5, 0, -0.5]} scale={0.8} />
             
-            {/* Center core shards */}
             <Shard offsetDir={[0.1, 0.1, 0.1]} moveDir={[1, 1, 1]} scale={0.5} />
             <Shard offsetDir={[-0.1, -0.1, -0.1]} moveDir={[-1, -1, 1]} scale={0.5} />
         </group>
@@ -141,35 +131,35 @@ const Note: React.FC<NoteProps> = ({ data, zPos, currentTime }) => {
 
   return (
     <group position={position}>
-      {/* Main Spark Shape */}
       <group rotation={[0, 0, 0]}> 
-        {/* We center the extrusion by offsetting z */}
         <group position={[0, 0, -NOTE_SIZE * 0.2]}>
             <Extrude args={[SPARK_SHAPE, EXTRUDE_SETTINGS]} castShadow receiveShadow>
+                {/* Crystal Material for Notes */}
                 <meshPhysicalMaterial 
                     color={color} 
-                    roughness={0.2} 
-                    metalness={0.1}
-                    transmission={0.1} // Slight glass effect
-                    thickness={0.5}
+                    roughness={0.1} 
+                    metalness={0.2}
+                    transmission={0.4}
+                    thickness={1.0}
                     emissive={color}
-                    emissiveIntensity={0.8} // Glowing inner light
+                    emissiveIntensity={0.6}
+                    clearcoat={1}
                 />
             </Extrude>
         </group>
       </group>
       
-      {/* Inner Core Glow (Replaces Arrow) */}
+      {/* Center Glow */}
       <mesh position={[0, 0, NOTE_SIZE * 0.1]}>
-         <octahedronGeometry args={[NOTE_SIZE * 0.2, 0]} />
-         <meshBasicMaterial color="white" toneMapped={false} transparent opacity={0.8} />
+         <octahedronGeometry args={[NOTE_SIZE * 0.25, 0]} />
+         <meshBasicMaterial color="white" toneMapped={false} transparent opacity={0.9} />
       </mesh>
 
-      {/* Outer Wireframe Glow for emphasis */}
+      {/* Outline Glow */}
       <group position={[0, 0, -NOTE_SIZE * 0.2]}>
           <mesh>
              <extrudeGeometry args={[SPARK_SHAPE, { ...EXTRUDE_SETTINGS, depth: EXTRUDE_SETTINGS.depth * 1.1 }]} />
-             <meshBasicMaterial color={color} wireframe transparent opacity={0.3} />
+             <meshBasicMaterial color={color} wireframe transparent opacity={0.4} toneMapped={false} />
           </mesh>
       </group>
     </group>
